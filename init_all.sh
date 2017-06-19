@@ -39,10 +39,10 @@ upload_crls () {
 }
 
 # Create CA
-#${SCRIPT_PATH}/ca_management/ca_init.sh
+${SCRIPT_PATH}/ca_management/ca_init.sh
 
 # Using CA, build LDAP's certificate
-#${SCRIPT_PATH}/ca_management/gen_host_cert.sh ${LDAP_HOST}
+${SCRIPT_PATH}/ca_management/gen_host_cert.sh ${LDAP_HOST}
 
 # Generate LDAP's config file and put the custom
 # schema on the schema subdirectory.
@@ -84,5 +84,5 @@ rm /tmp/tmp.conf
 get_sysadmin_hashed_pass
 echo "rootpw	\"${SYSADMIN_PHASH}\"" >> ${LDAP_CONF_DIR}/slapd.conf
 
-#upload_ca_certs
-#upload_crls
+upload_ca_certs
+upload_crls

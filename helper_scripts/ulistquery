@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# This script runs on our web server under an unprivileged user
+# that can only read from the database. The script is executed
+# remotely via SSH (certificate based auth) by sync_to_forum.sh
+
+FORUMDB=""
+FORUMDB_USER=""
+FORUMDB_PASS=""
+
+do_query () {
+	mysql --xml -e "set names utf8; \
+			SELECT phpbb_users.user_id,username,user_type,user_email,phpbb_profile_fields_data.pf_real_life_name,pf_mobile_phone,pf_csr \
+			FROM phpbb_users \
+			JOIN phpbb_profile_fields_data ON \
+			phpbb_users.user_id = phpbb_profile_fields_data.user_id" \
+		-u ${FORUMDB_USER} 
+		-p${FORUMDB_PASS} ${FORUMDB}
+}
+
+do_query

@@ -385,6 +385,26 @@ ca_gen_crl () {
 	rm ${OSSL_CNF}
 }
 
+# Update the CRL file to account for expired certificates
+ca_update_crl () {
+	echo "" > ${OSSL_CNF}
+	ca_set_ca_conf
+
+	openssl ca -updatedb \
+		-keyfile "${PRIV_KEY_DIR}/ca.key" \
+		-cert "${CERT_DIR}/ca.pem" \
+		-out "${CRL_DIR}/crl.pem" \
+		-config ${OSSL_CNF}
+
+	rm ${OSSL_CNF}
+}
+
+# Check if a user certificate is revoked
+ca_is_user_cert_revoked () {
+	cat ${CRL_DIR}/index | grep "\OU=Users/CN=${1}" | grep "\<R\>" &> /dev/null
+	return $?
+}
+
 # Mark a user certificate as revoked on the CA database (index) file
 # Arguments: username
 # Note: Call ca_gen_crl afterwards to update the CRL

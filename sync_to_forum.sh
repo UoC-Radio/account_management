@@ -97,6 +97,20 @@ process_user () {
 	if [[ ${USER_CSR} = *[^[:space:]]* ]] ; then
 		# Check if user already has a certificate
 		if [[ -f ${CERT_DIR}/${USERNAME}.pem ]] ; then
+			if [[ ${USER_TYPE} = 1 ]] ; then
+				# Inactive user, revoke certificate
+				ca_is_user_cert_revoked ${USERNAME}
+				if [[ $? != 0 ]]; then
+					log "Revoking certificate of ${USERNAME}"
+					ca_revoke_user_cert ${USERNAME}
+				fi
+			else
+				ca_is_user_cert_revoked ${USERNAME}
+				if [[ $? == 0 ]]; then
+					log "Un-revoking certificate of ${USERNAME}"
+					ca_unrevoke_user_cert ${USERNAME}
+				fi
+			fi
 			return;
 		fi
 
@@ -116,7 +130,7 @@ process_user () {
 
 		log "User's certificate created"
 
-		# Now generate teh SSH certificate
+		# Now generate the SSH certificate
 		ssh_ca_gen_user_cert ${USERNAME}
 
 		# Check if it was created as expected

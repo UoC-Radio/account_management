@@ -16,11 +16,15 @@ log () {
 # We don't have slappaswd on openwrt
 # so grab the hash from the ldif file
 # directly (it's ugly, I know).
+#get_sysadmin_hashed_pass () {
+#        local TMP=$(echo ${BASE_DN}/cn=sysadmin.ldif | awk '{print tolower($0)}')
+#        local SYSADMIN_LDIF="${LDAP_DATA_DIR}/${TMP}"
+#        local PASS_ENC=$(cat "${SYSADMIN_LDIF}" | grep userPassword | awk '{print $2}')
+#        SYSADMIN_PHASH=$(echo ${PASS_ENC} | base64 -d -)
+#}
+
 get_sysadmin_hashed_pass () {
-        local TMP=$(echo ${BASE_DN}/cn=sysadmin.ldif | awk '{print tolower($0)}')
-        local SYSADMIN_LDIF="${LDAP_DATA_DIR}/${TMP}"
-        local PASS_ENC=$(cat "${SYSADMIN_LDIF}" | grep userPassword | awk '{print $2}')
-        SYSADMIN_PHASH=$(echo ${PASS_ENC} | base64 -d -)
+        SYSADMIN_PHASH=$(slappasswd -s ${LDAP_BIND_PASS})
 }
 
 upload_ca_certs () {

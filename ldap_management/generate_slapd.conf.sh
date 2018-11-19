@@ -29,8 +29,8 @@ pidfile		/var/run/slapd.pid
 argsfile	/var/run/slapd.args
 
 # Load dynamic backend modules:
-# modulepath	/usr/lib/openldap
-# moduleload	back_bdb.la
+modulepath	/usr/lib/openldap
+moduleload	back_mdb.so
 # moduleload	back_hdb.la
 # moduleload	back_ldap.la
 
@@ -109,15 +109,25 @@ access to dn.subtree="ou=Hosts,${BASE_DN}"
 # rootdn can always read and write EVERYTHING!
 
 #######################################################################
-# BDB database definitions
+# MDB database definitions
 #######################################################################
 
-database	ldif
+database	mdb
+maxsize		1073741824
 suffix		"${BASE_DN}"
 rootdn		"CN=SysAdmin,${BASE_DN}"
+
+# Cleartext passwords, especially for the rootdn, should
+# be avoid.  See slappasswd(8) and slapd.conf(5) for details.
+# Use of strong authentication encouraged.
 rootpw		"${LDAP_BIND_PASS}"
+
+# The database directory MUST exist prior to running slapd AND 
+# should only be accessible by the slapd and slap tools.
+# Mode 700 recommended.
 directory	${LDAP_DATA_DIR}
+
 # Indices to maintain
-#index	objectClass	eq
+index	objectClass	eq
 
 EOF
